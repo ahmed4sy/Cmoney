@@ -8,9 +8,8 @@ let dxy = {
   OMR: 2.6,
 };
 export default function Inp({ opM }) {
-  const [Inp_1, setInp_1] = useState("0");
-  const [Inp_2, setInp_2] = useState("0");
-  let opS = "SAR";
+  const [Inp, setInp] = useState({ last: "0.00", next: "0.00" });
+  const [Coin, setCoin] = useState("");
   function getVal(num, opt) {
     return num * dxy[opt];
   }
@@ -22,21 +21,32 @@ export default function Inp({ opM }) {
       <div className="Input">
         <input
           type="number"
-          value={Inp_1}
+          value={Inp.last}
           onChange={(ele) => {
-            setInp_1(ele.target.value);
-            setInp_2(getVal(Number(ele.target.value), opS).toFixed(2));
+            setInp({
+              last: ele.target.value,
+              next: getVal(Number(ele.target.value), Coin).toFixed(2),
+            });
           }}
         />
-        <select value={"SAR"}>{opM}</select>
+        <select
+          value={Coin}
+          onChange={(eve) => {
+            setCoin(eve.target.value);
+          }}
+        >
+          {opM}
+        </select>
       </div>
       <div className="Input">
         <input
           type="number"
-          value={Inp_2}
+          value={Inp.next}
           onChange={(ele) => {
-            setInp_2(ele.target.value);
-            setInp_1(getVal2(Number(ele.target.value), opS).toFixed(2));
+            setInp({
+              next: ele.target.value,
+              last: getVal2(Number(ele.target.value), Coin).toFixed(2),
+            });
           }}
         />
         <select value={"USD"}>{opM}</select>
