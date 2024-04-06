@@ -8,13 +8,11 @@ let dxy = {
   OMR: 2.6,
 };
 export default function Inp({ opM }) {
-  const [Inp, setInp] = useState({ last: "0.00", next: "0.00" });
-  const [Coin, setCoin] = useState("");
-  function getVal(num, opt) {
-    return num * dxy[opt];
-  }
-  function getVal2(num, opt) {
-    return num / dxy[opt];
+  const [Inp, setInp] = useState({ last: "0", next: "0" });
+  const [Coin, setCoin] = useState({ last: "SDG", next: "USD" });
+
+  function focusSel(params) {
+    setInp({ last: "", next: "0" });
   }
   return (
     <>
@@ -22,17 +20,26 @@ export default function Inp({ opM }) {
         <input
           type="number"
           value={Inp.last}
+          onFocus={focusSel}
           onChange={(ele) => {
             setInp({
               last: ele.target.value,
-              next: getVal(Number(ele.target.value), Coin).toFixed(2),
+              next: Ecl(Number(ele.target.value), Coin.last, Coin.next).toFixed(
+                2
+              ),
             });
           }}
         />
         <select
-          value={Coin}
+          value={Coin.last}
           onChange={(eve) => {
-            setCoin(eve.target.value);
+            setCoin({ next: Coin.next, last: eve.target.value });
+            setInp({
+              last: Inp.last,
+              next: Ecl(Number(Inp.last), eve.target.value, Coin.next).toFixed(
+                2
+              ),
+            });
           }}
         >
           {opM}
@@ -44,30 +51,29 @@ export default function Inp({ opM }) {
           value={Inp.next}
           onChange={(ele) => {
             setInp({
-              next: ele.target.value,
-              last: getVal2(Number(ele.target.value), Coin).toFixed(2),
+              ...setInp,
+              last: Ecl(ele.target.value, Coin.next, Coin.last).toFixed(2),
             });
           }}
         />
-        <select value={"USD"}>{opM}</select>
+        <select
+          value={Coin.next}
+          onChange={(eve) => {
+            setCoin({ last: Coin.last, next: eve.target.value });
+            setInp({
+              last: Inp.last,
+              next: Ecl(Number(Inp.last), Coin.last, eve.target.value).toFixed(
+                2
+              ),
+            });
+          }}
+        >
+          {opM}
+        </select>
       </div>
     </>
   );
 }
-// function I2({ opM }) {
-
-//   function ChangaNum(ele) {
-//     setInp_(ele.target.value);
-//   }
-//   return (
-
-//   );
-// <div className="Input">
-//          <input
-//         type="number"
-//          className="inp2"
-//        />
-//        <select>
-//          <option>USD</option>
-//        </select>
-//      </div> */}
+function Ecl(num, opt, opt2) {
+  return (dxy[opt] * num) / dxy[opt2];
+}
